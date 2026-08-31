@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SnapGuard · 目录快照与完整性守护</title>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --bg-soft: #11151f;
+    --bg-card: #151b27;
+    --border: #232b3a;
+    --border-soft: #1b2230;
+    --text: #e6edf3;
+    --text-dim: #9aa7b8;
+    --text-faint: #66748a;
+    --accent: #5eead4;
+    --accent-2: #7dd3fc;
+    --green: #4ade80;
+    --red: #f472b6;
+    --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  .wrap { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+  header { padding: 48px 0 32px; text-align: center; border-bottom: 1px solid var(--border-soft); }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--accent); border: 1px solid var(--border);
+    background: var(--bg-soft); padding: 5px 12px; border-radius: 999px; margin-bottom: 18px;
+    font-family: var(--mono);
+  }
+  h1 { font-size: 42px; margin: 0 0 10px; letter-spacing: -1px; }
+  .tagline { color: var(--text-dim); font-size: 17px; margin: 0; }
+  section { padding: 40px 0; border-bottom: 1px solid var(--border-soft); }
+  h2 { font-size: 22px; margin: 0 0 18px; }
+  p { color: var(--text-dim); margin: 0 0 14px; }
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .feature {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 18px;
+  }
+  .feature .emoji { font-size: 26px; margin-bottom: 8px; }
+  .feature h3 { font-size: 15px; margin: 0 0 6px; }
+  .feature p { font-size: 14px; margin: 0; color: var(--text-faint); }
+  pre {
+    background: var(--bg-soft); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px; overflow: auto; font-family: var(--mono); font-size: 13px; color: var(--text-dim);
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, rgba(94,234,212,.15), rgba(125,211,252,.15));
+    border: 1px solid rgba(94,234,212,.35); color: var(--text);
+    padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 14px;
+    transition: transform .15s, border-color .15s;
+  }
+  .btn:hover { transform: translateY(-2px); border-color: var(--accent); }
+  footer { padding: 36px 0 60px; text-align: center; color: var(--text-faint); font-size: 13px; }
+  @media (max-width: 560px) {
+    h1 { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="badge">🛡️ L4 专家 · 目录快照与完整性守护</div>
+    <h1>SnapGuard</h1>
+    <p class="tagline">为任意目录生成不可变快照，检测变更、校验完整性、实时监控。</p>
+    <p style="margin-top:18px;">
+      <a class="btn" href="https://github.com/1fzx23/snapguard" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+      <a class="btn" href="https://1fzx23.github.io/my-tools/" target="_blank" rel="noopener">返回工具箱 ↗</a>
+    </p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section>
+    <h2>核心能力</h2>
+    <div class="features">
+      <div class="feature">
+        <div class="emoji">📸</div>
+        <h3>快照</h3>
+        <p>记录目录中每个文件的路径、大小、修改时间与 SHA-256。</p>
+      </div>
+      <div class="feature">
+        <div class="emoji">🔍</div>
+        <h3>对比</h3>
+        <p>diff 命令输出新增、删除、修改与重命名，智能识别内容未变的路径变更。</p>
+      </div>
+      <div class="feature">
+        <div class="emoji">✅</div>
+        <h3>校验</h3>
+        <p>重新计算哈希，检测文件损坏、静默篡改或备份不完整。</p>
+      </div>
+      <div class="feature">
+        <div class="emoji">👀</div>
+        <h3>监控</h3>
+        <p>watch 命令实时监听变化，优先 OS 原生事件，无依赖时自动轮询。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>安装与使用</h2>
+    <pre>git clone https://github.com/1fzx23/snapguard.git
+cd snapguard
+
+python snapguard.py init .
+python snapguard.py snap --label "before-upgrade"
+python snapguard.py diff latest
+python snapguard.py verify latest</pre>
+  </section>
+
+  <section>
+    <h2>设计亮点</h2>
+    <p>核心功能仅使用 Python 标准库，无需安装额外依赖；<code>watchdog</code> 作为可选依赖提升实时监控体验。快照文件为纯 JSON，便于版本控制与二次处理。自动跳过 <code>.snapguard</code> 自身仓库，避免快照循环。</p>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    由 WorkBuddy 自动开发 · 开源 MIT ·
+    <a href="https://github.com/1fzx23" target="_blank" rel="noopener">github.com/1fzx23</a>
+  </div>
+</footer>
+
+</body>
+</html>

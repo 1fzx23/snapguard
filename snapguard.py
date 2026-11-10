@@ -561,6 +561,8 @@ def cmd_watch(args: argparse.Namespace) -> int:
 
 def cmd_prune(args: argparse.Namespace) -> int:
     store = _get_store(args)
+    if args.keep < 0:
+        raise SnapGuardError(f"--keep must be >= 0, got {args.keep}.")
     snaps = list_snapshots(store)
     if args.keep >= len(snaps):
         print(f"Nothing to prune ({len(snaps)} snapshot(s), keep={args.keep}).")

@@ -4,6 +4,7 @@ Smoke tests for SnapGuard.
 Run with:
     python -m unittest test_snapguard.py
 """
+import argparse
 import os
 import tempfile
 import unittest
@@ -100,6 +101,27 @@ class TestSnapGuard(unittest.TestCase):
         loaded = sg.load_snapshot(store, "latest")
         self.assertEqual(loaded.id, s2.id)
 
+
+    def test_prune_rejects_negative_keep(self):
+        store = self.root / ".snapguard"
+        (store / "snapshots").mkdir(parents=True)
+        self._write("file.txt", "v1")
+        snap = sg.create_snapshot(self.root, "first")
+        sg.save_snapshot(store, snap)
+        args = argparse.Namespace(store=str(store), dir=str(self.root), command="prune", keep=-1)
+        with self.assertRaises(sg.SnapGuardError):
+            sg.cmd_prune(args)
+        self.assertTrue((store / "snapshots" / (snap.id + ".json")).exists())
+
+    def test_prune_negative_keep_cli_exit_code(self):
+        store = self.root / ".snapguard"
+        (store / "snapshots").mkdir(parents=True)
+        self._write("file.txt", "v1")
+        snap = sg.create_snapshot(self.root, "first")
+        sg.save_snapshot(store, snap)
+        rc = sg.main(["--store", str(store), "prune", "--keep", "-1"])
+        self.assertEqual(rc, 2)
+        self.assertTrue((store / "snapshots" / (snap.id + ".json")).exists())
 
 if __name__ == "__main__":
     unittest.main()
